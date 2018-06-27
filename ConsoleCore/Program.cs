@@ -53,12 +53,13 @@ namespace ConsoleCore
                 // The Render section
                 // Clear the console before we draw
                 Console.Clear();
-                
+
 
                 // Draw the player at the current position in white
-                Console.SetCursorPosition(Player.X, Player.Y);
-                Console.ForegroundColor = Player.Color;
-                Console.Write(Player.Char);
+                var entities = new List<Entity>();
+                entities.Add(Player);
+                RenderManager.RenderAll(entities);
+                
 
                 // The Update section
                 // Wait for a key press and do not display key on the console

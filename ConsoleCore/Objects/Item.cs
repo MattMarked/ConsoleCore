@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ConsoleCore.Objects
 {
-    class Item
+    public class Item
     {
     }
 }
