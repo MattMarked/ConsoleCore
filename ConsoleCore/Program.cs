@@ -7,12 +7,15 @@ using Console = Colorful.Console;
 
 namespace ConsoleCore
 {
-    class Program
+    public class Program
     {
         static bool quit = false;
         const int screenWidth = 80;
-        const int screenHeight = 24;
-        static Entity Player = new Entity(0,0);
+        const int screenHeight = 50;
+        const int mapWidth = 80;
+        const int mapHeight = 45;
+        
+
         private static void ConsoleOnCancelKeyPress(object sender, ConsoleCancelEventArgs consoleCancelEventArgs)
         {
             // Set flag that we’ll use to cancel on our own terms
@@ -24,42 +27,39 @@ namespace ConsoleCore
             // Register Ctrl+C handler and hide the cursor
             Console.CancelKeyPress += ConsoleOnCancelKeyPress;
             Console.CursorVisible = false;
-            
+            Entity Player;
+            GameMap GameMap;
+            Player = new Entity(0, 0);
+            GameMap = new GameMap(mapWidth, mapHeight);
             // Initialize Game variables
-            InitializeGame();
-
+            InitializeGame(Player,GameMap);
+            bool mapIsChanged = true;
             // Enter Game Loop
-            GameLoop();
+            GameLoop(Player, GameMap, mapIsChanged);
         }
 
-        static void InitializeGame()
+        static void InitializeGame(Entity player, GameMap gameMap)
         {
+           
             // Set window size
             Console.SetWindowSize(screenWidth, screenHeight);
             Console.SetBufferSize(screenWidth, screenHeight);
             // Set initial player position to center of screen
-            Player.X = screenWidth / 2;
-            Player.Y = screenHeight / 2;
-            Player.Char = '@';
-            Player.Color = Color.Fuchsia;
+            player.X = screenWidth / 2;
+            player.Y = screenHeight / 2;
+            player.Char = '@';
+            player.Color = Color.Fuchsia;
         }
 
-        static void GameLoop()
+        static void GameLoop(Entity player, GameMap gameMap, bool mapIsChanged)
         {
             while (!quit)
-            {
-                // Sleep a short period at the end of each iteration of the loop
-                Thread.Sleep(100);
-                // The Render section
-                // Clear the console before we draw
-                Console.Clear();
-
-
-                // Draw the player at the current position in white
+            {     
                 var entities = new List<Entity>();
-                entities.Add(Player);
-                RenderManager.RenderAll(entities);
-                
+                entities.Add(player);
+              
+                RenderManager.RenderAll(entities,gameMap,mapIsChanged);
+                mapIsChanged = false;
 
                 // The Update section
                 // Wait for a key press and do not display key on the console
@@ -71,7 +71,19 @@ namespace ConsoleCore
 
                 if (move != null)
                 {
-                    Player.Move( (move as Tuple<int, int>).Item1, (move as Tuple<int, int>).Item2);                    
+                    int next_X = player.X + (move as Tuple<int, int>).Item1, next_Y = player.Y + (move as Tuple<int, int>).Item2;
+                    if(next_X >= 0 && next_Y >= 0 && next_X < gameMap.Cells.GetUpperBound(0) && next_Y < gameMap.Cells.GetUpperBound(1))
+                    {
+                        //next move is inside the map
+                        //check if i can move or there's a wall
+                        if (!gameMap.Cells[next_X, next_Y].Blocked)
+                        {
+                            RenderManager.ClearAll(entities);
+                            gameMap.Cells[player.X, player.Y].CellEntity = null;
+                            player.Move((move as Tuple<int, int>).Item1, (move as Tuple<int, int>).Item2);
+                            gameMap.Cells[next_X, next_Y].CellEntity = player;
+                        }
+                    }                                      
                 }
             }
         }
