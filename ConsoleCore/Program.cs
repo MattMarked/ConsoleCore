@@ -79,17 +79,17 @@ namespace ConsoleCore
         static Dictionary<string,object> HandleKeys(ConsoleKeyInfo keyPressed)
         {
             if (keyPressed.Key == ConsoleKey.UpArrow)
-                return new Dictionary<string, object>() { { "move", new Tuple<int,int>(0,-1) } };
+                return new Dictionary<string, object>() { ["move"] = new Tuple<int,int>(0,-1)  };
             else if (keyPressed.Key == ConsoleKey.DownArrow)
-                return new Dictionary<string, object>() { { "move", new Tuple<int, int>(0, 1) } };
+                return new Dictionary<string, object>() { ["move"] = new Tuple<int, int>(0, 1) };
             else if (keyPressed.Key == ConsoleKey.LeftArrow)
-                return new Dictionary<string, object>() { { "move", new Tuple<int, int>(-1, 0) } };
+                return new Dictionary<string, object>() { ["move"] = new Tuple<int, int>(-1, 0) };
             else if (keyPressed.Key == ConsoleKey.RightArrow)
-                return new Dictionary<string, object>() { { "move", new Tuple<int, int>(1, 0) } };
+                return new Dictionary<string, object>() { ["move"] = new Tuple<int, int>(1, -0) };
             
 
             if(keyPressed.Key == ConsoleKey.Escape)
-                return new Dictionary<string, object>() { { "exit", true } };
+                return new Dictionary<string, object>() { ["exit"] = true };
             return new Dictionary<string, object>() ;
 
         }
